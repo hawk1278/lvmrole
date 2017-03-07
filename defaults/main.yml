@@ -1,0 +1,25 @@
+---
+## Should I create a patition table or partition the disk?
+# Create partition table and primary disk partition
+partion_disk: false
+label: msdos
+
+# Default parted optimization
+parted_optimization: optimal
+
+# Disk partitioning - whole size
+partitions:
+  - {'partition_type': 'primary', 'start_point': '0%', 'end_point': '100%'}
+
+## Activate/Deactivate create VG/LV - fs manage
+create_vg: false
+create_lv: false
+fs_manage: false
+
+### Load Profile - VG/LV
+profile: empty
+
+## Filesystem type depend on RHEL mayor version
+fstype_OS: "{% if ansible_distribution_major_version >= '7' %}xfs{% elif ansible_distribution_major_version == '6' %}ext4{% else %}ext3{% endif %}"
+
+#show: false

@@ -1,0 +1,28 @@
+---
+- name: Show filesystem Type
+  debug: msg="{{fstype_OS}}"
+
+- name: Show first level
+  debug: msg="{{ item.device }} {{ item.pvname }} {{ item.vgname }}"
+  with_items: "{{ vars[profile] | default([]) }}"
+
+- name: Show all dictionary elements
+  debug: 
+    msg="{{ item.0.device }} {{ item.0.pvname }} {{ item.0.vgname }} {{ item.1.lvname }} {{ item.1.size }} {{fstype_OS}} {{ item.1.mntpoint }} {{ item.1.user | default([]) }} {{ item.1.group | default([]) }} {{ item.1.mode | default([]) }}"
+  with_subelements:
+    - "{{ vars[profile] | default([]) }}"
+    - lvs 
+
+- name: Check if device has a partition already
+  shell: /sbin/partprobe -s "{{ item.device }}" | /bin/grep -c partitions
+  with_items: "{{ vars[profile] | default([]) }}"
+  #ignore_errors: yes
+  register: check_partitions
+  failed_when: "'FAILED' in check_partitions.stderr"
+
+- name: Show output check_partitions
+  debug: msg={{item.stdout}}
+  when: "{{item.stdout}} == 0" 
+  with_items: "{{check_partitions.results}}"
+
+

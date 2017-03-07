@@ -1,0 +1,25 @@
+---
+  - hosts: lab
+    gather_facts: yes
+    remote_user: root 
+    #become: yes
+    #become_method: sudo
+    roles:
+    - role: ansible-manage-lvm
+      partion_disk: true
+      label: msdos
+      create_vg: true
+      create_lv: true
+      fs_manage: true
+      #fstype_OS: ext4
+      profile: weblogic
+      weblogic:
+        - device: "/dev/vdc"
+          pvname: "/dev/vdc1"
+          vgname: WeblogVG
+          lvs:
+            - { lvname: logs_lv, size: 100M, fstype: "{{ fstype_OS }}", mntpoint: "/logs", user: weblogic, group: weblogic }
+            - { lvname: soft_lv, size: 100M, fstype: "{{ fstype_OS }}", mntpoint: "/opt/soft", user: weblogic, group: weblogic }
+            - { lvname: backups_lv, size: 100M, fstype: "{{ fstype_OS }}", mntpoint: "/backups", user: weblogic, group: weblogic }
+            - { lvname: wlscfg_lv, size: 52M, fstype: "{{ fstype_OS }}", mntpoint: "/wlscfg", user: weblogic, group: weblogic }
+            - { lvname: cache_lv, size: 52M, fstype: "{{ fstype_OS }}", mntpoint: "/cache", user: weblogic, group: weblogic }

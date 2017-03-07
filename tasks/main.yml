@@ -1,0 +1,13 @@
+---
+#- include: show.yml
+#  when: show == true
+
+#- include: partition.yml
+#  when: partion_disk == true
+
+- include: lvm_manage.yml
+  when: create_vg == true or create_lv == true
+
+- include: fs_manage.yml
+  when: fs_manage == true
+

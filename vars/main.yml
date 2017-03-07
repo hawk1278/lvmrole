@@ -1,0 +1,7 @@
+---
+empty:
+- device: []
+  pvname: []
+  vgname: []
+  lvs: 
+    - { lvname: [], size: [], fstype: [], mntpoint: [], user: [], group: [] }

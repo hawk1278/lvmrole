@@ -1,0 +1,42 @@
+---
+  - hosts: lab
+    gather_facts: yes
+    remote_user: root 
+    #become: yes
+    #become_method: sudo
+    roles:
+    - role: ansible-manage-lvm
+      partion_disk: true
+      label: msdos
+      create_vg: true
+      create_lv: true
+      fs_manage: true
+      fstype_OS: ext4
+      profile: apache
+      apache:
+      - device: "/dev/vdb"
+        pvname: "/dev/vdb1"
+        vgname: ApacheVG
+        lvs:
+          - { lvname: logs_lv, size: 100M, fstype: "{{ fstype_OS }}", mntpoint: "/apache/logs", user: apache, group: apache, mode: 770 }
+          - { lvname: soft_lv, size: 100M, fstype: "{{ fstype_OS }}", mntpoint: "/opt/apache/soft", user: apache, group: apache, mode: 770 }
+          - { lvname: backups_lv, size: 52M, fstype: "{{ fstype_OS }}", mntpoint: "/apache/backups", user: apache, group: apache, mode: 770 }
+
+    - role: ansible-manage-lvm
+      partion_disk: true
+      label: msdos
+      create_vg: true
+      create_lv: true
+      fs_manage: true
+      profile: weblogic
+      weblogic:
+        - device: "/dev/vdc"
+          pvname: "/dev/vdc1"
+          vgname: WeblogVG
+          lvs:
+            - { lvname: logs_lv, size: 100M, fstype: "{{ fstype_OS }}", mntpoint: "/weblogic/logs", user: weblogic, group: weblogic }
+            - { lvname: soft_lv, size: 100M, fstype: "{{ fstype_OS }}", mntpoint: "/opt/weblogic/soft", user: weblogic, group: weblogic }
+            - { lvname: backups_lv, size: 100M, fstype: "{{ fstype_OS }}", mntpoint: "/weblogic/backups", user: weblogic, group: weblogic }
+            - { lvname: wlscfg_lv, size: 52M, fstype: "{{ fstype_OS }}", mntpoint: "/weblogic/wlscfg", user: weblogic, group: weblogic }
+            - { lvname: cache_lv, size: 52M, fstype: "{{ fstype_OS }}", mntpoint: "/weblogic/cache", user: weblogic, group: weblogic }
+

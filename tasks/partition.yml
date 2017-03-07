@@ -1,0 +1,24 @@
+---
+- name: Check if device has a partition already
+  shell: /sbin/partprobe -s "{{ item.device }}" | /bin/grep -c partitions
+  with_items: "{{ vars[profile] | default([]) }}"
+  #ignore_errors: yes
+  register: check_partitions
+  failed_when: "'FAILED' in check_partitions.stderr"
+
+- name: Create the label on disks
+  shell: parted -s "{{ item.0.device }}" mklabel "{{ label }}"
+  with_nested: 
+  - "{{ vars[profile] | default([]) }}"
+  - "{{check_partitions.results}}"
+## Create label if device doesn't have a partition table already AND the device exists in the host
+  when: "{{item.1.stdout}} == 0 and {{ item.0.device|basename in hostvars[inventory_hostname]['ansible_devices'].keys()|list }}"
+
+- name: Create the partitions
+  shell: parted -a "{{ parted_optimization }}" -s "{{ item.0.device }}" mkpart "{{ item.1['partition_type'] }}" "{{ item.1['start_point'] }}" "{{ item.1['end_point'] }}"
+  with_nested:
+  - "{{ vars[profile] | default([]) }}"
+  - "{{ partitions }}"
+  - "{{check_partitions.results}}"
+## Create label if device doesn't have a partition table already AND the device exists in the host
+  when: "{{item.2.stdout}} == 0 and {{ item.0.device|basename in hostvars[inventory_hostname]['ansible_devices'].keys()|list }}" 

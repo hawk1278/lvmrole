@@ -1,0 +1,22 @@
+---
+## fstype OS: is a role default variable, which assign the value according to rhel release (rhel7-xfs/rhel6-ext4/rhel5<ext3).
+- name: Filesystem format
+  filesystem: fstype="{{fstype_OS}}" dev="/dev/mapper/{{ item.0.vgname }}-{{ item.1.lvname }}" 
+  with_subelements:
+    - "{{ vars[profile] | default([]) }}"
+    - lvs 
+  when: fs_manage == true and profile is defined
+
+- name: Filesystem mount - fstab entry
+  mount: name="{{ item.1.mntpoint }}" src="/dev/mapper/{{ item.0.vgname }}-{{ item.1.lvname }}" dump=1 passno=2 fstype="{{fstype_OS}}" opts="{{ item.1.mount_opts | default(omit)}}" state="mounted"
+  with_subelements:
+    - "{{ vars[profile] | default([]) }}"
+    - lvs 
+  when: fs_manage == true and profile is defined
+
+- name: Filesystem permission on directories after mounted
+  file: path="{{ item.1.mntpoint }}" state=directory owner="{{ item.1.user | default(omit) }}" group="{{ item.1.group | default(omit) }}" mode="{{ item.1.mode | default(omit) }}"
+  with_subelements:
+    - "{{ vars[profile] | default([]) }}"
+    - lvs 
+  when: fs_manage == true and profile is defined

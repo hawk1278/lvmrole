@@ -1,0 +1,14 @@
+---
+## Create a NON-clustered Volume Group
+
+- name: Create Volume Group
+  lvg: vg="{{ item.vgname }}" pvs="{{ item.pvname }}" vg_options="--clustered n" state=present
+  with_items: "{{ vars[profile] | default([]) }}"
+  when: create_vg == true and profile is defined 
+
+- name: Create Logical Volume 
+  lvol: vg="{{ item.0.vgname }}" lv="{{ item.1.lvname }}" size="{{ item.1.size }}" state=present force=no
+  with_subelements:
+    - "{{ vars[profile] | default([]) }}"
+    - lvs 
+  when: create_lv == true and profile is defined
