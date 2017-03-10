@@ -26,13 +26,31 @@ profile: empty
 fstype_OS: rhel7-xfs/rhel6-ext4/rhel5-ext3  - or you can set with variable
 
 ### Profile example
-        profile: list_name	
-        list_name:
-        -  pvname: "/dev/sdc1"
-          vgname: VolumeGroupNameVG
-          lvs:
-            - { lvname: fs01_lv, size: 60G, fstype: "{{ fstype_OS }}", mntpoint: "/fs01", user: user, group: user }
-            - { lvname: fs02_lv, size: 10G, fstype: "{{ fstype_OS }}", mntpoint: "/fs01/fs02", user: user, group: user }
+  ---
+- hosts: web
+  become: true
+  roles:
+  - role: parted
+    vars:
+    - create_label: true
+    - label: msdos
+    - hdds:
+      - /dev/xvdg
+    - partitions:
+      - {'partition_type':'primary','start_point':'0%','end_point':'100%'}
+ 
+  - role: ansible-manage-lvm
+    create_vg: true
+    create_lv: true
+    fs_manage: true
+    fstype_OS: ext4
+    profile: apache
+    apache:
+     - pvname: "/dev/xvdg1"
+       vgname: ApacheVG2
+       lvs:
+       - { lvname: webdata_lv, size: 100%FREE, fstype: "{{ fstype_OS }}", mntpoint: "/data1", user: root, group: root, mode: 770 }
+          
 
 ### Dependencies
 There is no dependencies with other roles.
