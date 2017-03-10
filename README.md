@@ -39,7 +39,7 @@ fstype_OS: rhel7-xfs/rhel6-ext4/rhel5-ext3  - or you can set with variable
         - partitions:
           - {'partition_type':'primary','start_point':'0%','end_point':'100%'}
  
-      - role: ansible-manage-lvm
+      - role: lvmrole
         create_vg: true
         create_lv: true
         fs_manage: true
