@@ -12,7 +12,7 @@ This role requires Ansible 2.2 or higher, and platform requirements are listed i
 Available variables are listed below, along with default values:
 
 ### Partitioning
-Partitioning is handled by a separate role</br>
+Partitioning is handled by a separate <a href="https://github.com/hawk1278/ansible-parted">role</a></br>
 
 ### Activate/Deactivate create VG/LV - fs manage
 create_vg: false<br />
